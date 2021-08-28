@@ -45,7 +45,7 @@ class Mastermind
     display_code(COLORS)
     puts "A '^' means a color is in the right place."
     puts "A '>' means a color is correct, but in the wrong positon."
-    puts "Enter colors separated by spaces, like 'green cyan magenta blue'."
+    puts "Enter 4 colors separated by spaces, like 'green cyan magenta blue'."
     puts "=" * 64
     puts ""
   end
