@@ -26,21 +26,32 @@ class Mastermind
   end
 
   def play
-    puts "Secret code:"
-    display_code(secret)
-    puts "Color choices:"
-    display_code(COLORS)
-    puts "=" * 64
-    puts ""
+    display_colors
 
     until is_won? || is_lost?
       take_turn
+      give_feedback
       self.turn += 1
     end
+
+    display_results
+  end
+
+  def display_colors
+    puts "<== MASTERMIND ==>"
+    # puts "Secret code:"
+    # display_code(secret)
+    puts "Color choices:"
+    display_code(COLORS)
+    puts "A '^' means a color is in the right place."
+    puts "A '>' means a color is correct, but in the wrong positon."
+    puts "Enter colors separated by spaces, like 'green cyan magenta blue'."
+    puts "=" * 64
+    puts ""
   end
 
   def take_turn
-    print "Choose colors, separated by spaces: "
+    print "Turn #{turn + 1}: "
     guess = gets.chomp.split.map { |color| color.intern }
     until guess.length == 4 && guess.all? { |color| COLORS.include? color }
       print "Invalid input, try again: "
@@ -50,12 +61,48 @@ class Mastermind
     display_code(history.last)
   end
 
-  def is_won?
+  def give_feedback
+    right_color = 0
+    right_position = 0
+    color_count = Hash.new(0)
+    history.last.each_with_index do |guess_color, index| 
+      right_position += 1 if guess_color == secret[index]
 
+      secret_count = secret.count { |color| color == guess_color }
+      guess_count = history.last.count { |color| color == guess_color }
+      if color_count[guess_color] == 0
+        color_count[guess_color] = [guess_count, secret_count].min
+        right_color += color_count[guess_color]
+      end
+    end
+    print 'Feedback: '
+    print '^' * right_position
+    print '>' * (right_color - right_position)
+    puts "\n\n"
+  end
+
+  def is_won?
+    history.last == self.secret
   end
 
   def is_lost?
-    self.turn == 10
+    self.turn == 12
+  end
+
+  def display_results
+    puts '=' * 64
+    if is_won?
+      puts '+---------+'
+      puts "| Winner! |"
+      puts '+---------+'
+    elsif is_lost?
+      puts '+----------+'
+      puts "| YOU DIED |"
+      puts '+----------+'
+    end
+
+    puts "Secret code was:"
+    display_code self.secret
   end
 
 end
